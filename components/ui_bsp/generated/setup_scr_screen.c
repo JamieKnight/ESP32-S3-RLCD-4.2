@@ -177,6 +177,7 @@ void setup_scr_screen(lv_ui *ui)
     lv_obj_set_style_img_opa(ui->screen_img_1, 255, LV_PART_MAIN|LV_STATE_DEFAULT);
     lv_obj_set_style_radius(ui->screen_img_1, 0, LV_PART_MAIN|LV_STATE_DEFAULT);
     lv_obj_set_style_clip_corner(ui->screen_img_1, true, LV_PART_MAIN|LV_STATE_DEFAULT);
+    lv_obj_add_flag(ui->screen_img_1, LV_OBJ_FLAG_HIDDEN);
 
     //Write codes screen_label_6
     ui->screen_label_6 = lv_label_create(ui->screen_cont_2);
@@ -200,6 +201,7 @@ void setup_scr_screen(lv_ui *ui)
     lv_obj_set_style_pad_bottom(ui->screen_label_6, 0, LV_PART_MAIN|LV_STATE_DEFAULT);
     lv_obj_set_style_pad_left(ui->screen_label_6, 0, LV_PART_MAIN|LV_STATE_DEFAULT);
     lv_obj_set_style_shadow_width(ui->screen_label_6, 0, LV_PART_MAIN|LV_STATE_DEFAULT);
+    lv_obj_add_flag(ui->screen_label_6, LV_OBJ_FLAG_HIDDEN);
 
     //Write codes screen_label_5
     ui->screen_label_5 = lv_label_create(ui->screen_cont_2);
@@ -223,6 +225,7 @@ void setup_scr_screen(lv_ui *ui)
     lv_obj_set_style_pad_bottom(ui->screen_label_5, 0, LV_PART_MAIN|LV_STATE_DEFAULT);
     lv_obj_set_style_pad_left(ui->screen_label_5, 0, LV_PART_MAIN|LV_STATE_DEFAULT);
     lv_obj_set_style_shadow_width(ui->screen_label_5, 0, LV_PART_MAIN|LV_STATE_DEFAULT);
+    lv_obj_add_flag(ui->screen_label_5, LV_OBJ_FLAG_HIDDEN);
 
     //Write codes screen_img_2
     ui->screen_img_2 = lv_img_create(ui->screen_cont_2);
@@ -238,6 +241,7 @@ void setup_scr_screen(lv_ui *ui)
     lv_obj_set_style_img_opa(ui->screen_img_2, 255, LV_PART_MAIN|LV_STATE_DEFAULT);
     lv_obj_set_style_radius(ui->screen_img_2, 0, LV_PART_MAIN|LV_STATE_DEFAULT);
     lv_obj_set_style_clip_corner(ui->screen_img_2, true, LV_PART_MAIN|LV_STATE_DEFAULT);
+    lv_obj_add_flag(ui->screen_img_2, LV_OBJ_FLAG_HIDDEN);
 
     //Write codes screen_label_7
     ui->screen_label_7 = lv_label_create(ui->screen_cont_2);
@@ -261,6 +265,7 @@ void setup_scr_screen(lv_ui *ui)
     lv_obj_set_style_pad_bottom(ui->screen_label_7, 0, LV_PART_MAIN|LV_STATE_DEFAULT);
     lv_obj_set_style_pad_left(ui->screen_label_7, 0, LV_PART_MAIN|LV_STATE_DEFAULT);
     lv_obj_set_style_shadow_width(ui->screen_label_7, 0, LV_PART_MAIN|LV_STATE_DEFAULT);
+    lv_obj_add_flag(ui->screen_label_7, LV_OBJ_FLAG_HIDDEN);
 
     //Write codes screen_label_8
     ui->screen_label_8 = lv_label_create(ui->screen_cont_2);
@@ -284,6 +289,7 @@ void setup_scr_screen(lv_ui *ui)
     lv_obj_set_style_pad_bottom(ui->screen_label_8, 0, LV_PART_MAIN|LV_STATE_DEFAULT);
     lv_obj_set_style_pad_left(ui->screen_label_8, 0, LV_PART_MAIN|LV_STATE_DEFAULT);
     lv_obj_set_style_shadow_width(ui->screen_label_8, 0, LV_PART_MAIN|LV_STATE_DEFAULT);
+    lv_obj_add_flag(ui->screen_label_8, LV_OBJ_FLAG_HIDDEN);
 
     //Write codes screen_img_3
     ui->screen_img_3 = lv_img_create(ui->screen_cont_2);
