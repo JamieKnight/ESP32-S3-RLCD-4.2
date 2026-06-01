@@ -1,0 +1,2 @@
+source /Users/hermes/esp/factory-program/build/bootloader/gdbinit/symbols
+source /Users/hermes/esp/factory-program/build/bootloader/gdbinit/connect
