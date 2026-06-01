@@ -69,31 +69,22 @@ After the chart creation code, add:
     ui->screen_chart_series_1 = lv_chart_add_series(ui->screen_chart_1, lv_color_hex(0x000000), LV_CHART_AXIS_PRIMARY_Y);
 ```
 
-**Step 3: Add axis label widgets**
+**Step 3: Add Y-axis tick marks at 1°C intervals**
 
-After the chart series code, add two labels for Y-axis labels (temperature):
+Use LVGL's built-in `lv_chart_set_axis_tick()` — this automatically draws tick marks AND numeric labels on the Y-axis. For a 15–34°C range (20 values at 1°C each), we set 20 major ticks with labels enabled.
 
 ```c
-    //Write codes screen_label_16 — Y-axis label "°C"
-    ui->screen_label_16 = lv_label_create(ui->screen_cont_2);
-    lv_label_set_text(ui->screen_label_16, "°C");
-    lv_obj_set_pos(ui->screen_label_16, 155, 162);
-    lv_obj_set_size(ui->screen_label_16, 30, 15);
-    lv_obj_set_style_text_color(ui->screen_label_16, lv_color_hex(0x000000), LV_PART_MAIN|LV_STATE_DEFAULT);
-    lv_obj_set_style_text_font(ui->screen_label_16, &lv_font_montserratMedium_16, LV_PART_MAIN|LV_STATE_DEFAULT);
-    lv_obj_set_style_bg_opa(ui->screen_label_16, 0, LV_PART_MAIN|LV_STATE_DEFAULT);
-
-    //Write codes screen_label_17 — X-axis label "5 min"
-    ui->screen_label_17 = lv_label_create(ui->screen_cont_2);
-    lv_label_set_text(ui->screen_label_17, "5 min");
-    lv_obj_set_pos(ui->screen_label_17, 85, 297);
-    lv_obj_set_size(ui->screen_label_17, 30, 15);
-    lv_obj_set_style_text_color(ui->screen_label_17, lv_color_hex(0x000000), LV_PART_MAIN|LV_STATE_DEFAULT);
-    lv_obj_set_style_text_font(ui->screen_label_17, &lv_font_montserratMedium_16, LV_PART_MAIN|LV_STATE_DEFAULT);
-    lv_obj_set_style_bg_opa(ui->screen_label_17, 0, LV_PART_MAIN|LV_STATE_DEFAULT);
+    // Y-axis: 15-34°C range, 20 major ticks = 1°C increments, with labels, 25px reserved for label width
+    lv_chart_set_axis_tick(ui->screen_chart_1, LV_CHART_AXIS_PRIMARY_Y, 3, 0, 20, 0, true, 25);
+    // X-axis: 60 points, 10 major ticks (every 6 points ≈ 30s), with labels, 15px reserved
+    lv_chart_set_axis_tick(ui->screen_chart_1, LV_CHART_AXIS_PRIMARY_X, 0, 0, 10, 0, true, 15);
 ```
 
-Note: We're reusing label_16 and label_17 numbers. These were previously used for audio state ("正在录音"/"Recording") which is on screen_cont_3 (hidden during normal operation). If we want to avoid confusion, we can use label_18 and 19. Let me check — labels 15-17 are on screen_cont_3 (codec screen). So 16 and 17 are safe.
+`lv_chart_set_axis_tick(obj, axis, major_len, minor_len, major_cnt, minor_cnt, label_en, draw_size)`:
+- `major_len=3` — tick mark extends 3px into chart from edge
+- `major_cnt=20` — 20 major ticks covering the 20°C span (15, 16, 17, … 34)
+- `label_en=true` — draw numeric labels (15, 16, 17, … 34) next to major ticks
+- `draw_size=25` — extra horizontal space reserved so labels aren't clipped
 
 **Step 4: Update gui_guider.h**
 
@@ -101,8 +92,6 @@ In `gui_guider.h`, add the new widget references to the `lv_ui` struct. The stru
 ```c
     lv_obj_t *screen_chart_1;
     lv_obj_t *screen_chart_series_1;
-    lv_obj_t *screen_label_16;
-    lv_obj_t *screen_label_17;
 ```
 
 **Step 5: Declare chart update function in widgets_init.h**
@@ -286,7 +275,10 @@ The device should reboot and display:
 - Top-right: large seconds number
 - Top-right corner: humidity % and temperature ° labels
 - Middle-right: BLE and WiFi counts
-- Bottom half: temperature line graph with black line, spanning ~400x135 area
+- Bottom half: temperature line graph (190×135px) with:
+  - Black data line showing last 5 minutes of readings
+  - Y-axis tick marks with numeric labels at every 1°C from 15 to 34
+  - X-axis tick marks at regular intervals (~30s spacing)
 - Bottom-left area (where battery/SD was): blank white
 - Labels 5-8 should be hidden
 

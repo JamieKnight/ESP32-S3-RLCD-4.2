@@ -1,7 +1,7 @@
 {
     "version":            "1.2",
     "project_name":       "03_Fac",
-    "project_version":    "1",
+    "project_version":    "7d9a30a-dirty",
     "project_path":       "/Users/hermes/esp/factory-program",
     "idf_path":           "/Users/hermes/esp/esp-idf",
     "build_dir":          "/Users/hermes/esp/factory-program/build",
