@@ -46,6 +46,8 @@ typedef struct
 	lv_obj_t *screen_img_6;
 	lv_obj_t *screen_chart_1;
 	lv_chart_series_t *screen_chart_series_1;
+	lv_obj_t *screen_label_18;
+	lv_obj_t *screen_label_19;
 	lv_obj_t *screen_label_17;
 	lv_obj_t *screen_label_16;
 	lv_obj_t *screen_label_15;
