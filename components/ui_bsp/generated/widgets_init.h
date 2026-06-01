@@ -18,6 +18,7 @@ extern "C" {
 
 __attribute__((unused)) void kb_event_cb(lv_event_t *e);
 __attribute__((unused)) void ta_event_cb(lv_event_t *e);
+__attribute__((unused)) void chart_update_temp_series(float temperature);
 #if LV_USE_ANALOGCLOCK != 0
 void clock_count(int *hour, int *min, int *sec);
 #endif

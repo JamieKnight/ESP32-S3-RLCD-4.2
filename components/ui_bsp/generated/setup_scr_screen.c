@@ -453,6 +453,41 @@ void setup_scr_screen(lv_ui *ui)
     lv_obj_set_style_pad_left(ui->screen_label_14, 0, LV_PART_MAIN|LV_STATE_DEFAULT);
     lv_obj_set_style_shadow_width(ui->screen_label_14, 0, LV_PART_MAIN|LV_STATE_DEFAULT);
 
+    //Write codes screen_chart_1
+    ui->screen_chart_1 = lv_chart_create(ui->screen_cont_2);
+    lv_obj_set_pos(ui->screen_chart_1, 5, 160);
+    lv_obj_set_size(ui->screen_chart_1, 190, 135);
+    lv_chart_set_type(ui->screen_chart_1, LV_CHART_TYPE_LINE);
+    lv_chart_set_point_count(ui->screen_chart_1, 60);
+    lv_chart_set_range(ui->screen_chart_1, LV_CHART_AXIS_PRIMARY_Y, 150, 340);
+    lv_chart_set_update_mode(ui->screen_chart_1, LV_CHART_UPDATE_MODE_SHIFT);
+    lv_obj_set_style_bg_color(ui->screen_chart_1, lv_color_hex(0xffffff), LV_PART_MAIN|LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_opa(ui->screen_chart_1, 255, LV_PART_MAIN|LV_STATE_DEFAULT);
+    lv_obj_set_style_border_color(ui->screen_chart_1, lv_color_hex(0x000000), LV_PART_MAIN|LV_STATE_DEFAULT);
+    lv_obj_set_style_border_width(ui->screen_chart_1, 1, LV_PART_MAIN|LV_STATE_DEFAULT);
+    lv_obj_set_style_line_color(ui->screen_chart_1, lv_color_hex(0x000000), LV_PART_INDICATOR|LV_STATE_DEFAULT);
+
+    //Write codes screen_chart_series_1
+    ui->screen_chart_series_1 = lv_chart_add_series(ui->screen_chart_1, lv_color_hex(0x000000), LV_CHART_AXIS_PRIMARY_Y);
+
+    //Write codes screen_label_16
+    ui->screen_label_16 = lv_label_create(ui->screen_cont_2);
+    lv_label_set_text(ui->screen_label_16, "°C");
+    lv_obj_set_pos(ui->screen_label_16, 155, 162);
+    lv_obj_set_size(ui->screen_label_16, 30, 15);
+    lv_obj_set_style_text_color(ui->screen_label_16, lv_color_hex(0x000000), LV_PART_MAIN|LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(ui->screen_label_16, &lv_font_montserratMedium_16, LV_PART_MAIN|LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_opa(ui->screen_label_16, 0, LV_PART_MAIN|LV_STATE_DEFAULT);
+
+    //Write codes screen_label_17
+    ui->screen_label_17 = lv_label_create(ui->screen_cont_2);
+    lv_label_set_text(ui->screen_label_17, "5 min");
+    lv_obj_set_pos(ui->screen_label_17, 85, 297);
+    lv_obj_set_size(ui->screen_label_17, 30, 15);
+    lv_obj_set_style_text_color(ui->screen_label_17, lv_color_hex(0x000000), LV_PART_MAIN|LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(ui->screen_label_17, &lv_font_montserratMedium_16, LV_PART_MAIN|LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_opa(ui->screen_label_17, 0, LV_PART_MAIN|LV_STATE_DEFAULT);
+
     //Write codes screen_cont_3
     ui->screen_cont_3 = lv_obj_create(ui->screen);
     lv_obj_set_pos(ui->screen_cont_3, 0, 0);
