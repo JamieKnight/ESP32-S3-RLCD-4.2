@@ -1,0 +1,23 @@
+Command: make -j 14 all
+/Users/hermes/esp/factory-program/components/user_app/user_app.cpp: In function 'void chart_update_temp_series(float)':
+/Users/hermes/esp/factory-program/components/user_app/user_app.cpp:57:89: error: cannot convert 'float*' to 'lv_coord_t*' {aka 'short int*'}
+   57 |         lv_chart_set_ext_y_array(init_ui.screen_chart_1, init_ui.screen_chart_series_1, temp_history);
+      |                                                                                         ^~~~~~~~~~~~
+      |                                                                                         |
+      |                                                                                         float*
+In file included from /Users/hermes/esp/factory-program/managed_components/lvgl__lvgl/src/extra/widgets/lv_widgets.h:20,
+                 from /Users/hermes/esp/factory-program/managed_components/lvgl__lvgl/src/extra/lv_extra.h:21,
+                 from /Users/hermes/esp/factory-program/managed_components/lvgl__lvgl/lvgl.h:69,
+                 from /Users/hermes/esp/factory-program/components/ui_bsp/generated/gui_guider.h:16,
+                 from /Users/hermes/esp/factory-program/components/user_app/user_app.cpp:6:
+/Users/hermes/esp/factory-program/managed_components/lvgl__lvgl/src/extra/widgets/chart/lv_chart.h:413:83: note:   initializing argument 3 of 'void lv_chart_set_ext_y_array(lv_obj_t*, lv_chart_series_t*, lv_coord_t*)'
+  413 | void lv_chart_set_ext_y_array(lv_obj_t * obj, lv_chart_series_t * ser, lv_coord_t array[]);
+      |                                                                        ~~~~~~~~~~~^~~~~~~
+/Users/hermes/esp/factory-program/components/user_app/user_app.cpp: In function 'void Lvgl_UserTask(void*)':
+/Users/hermes/esp/factory-program/components/user_app/user_app.cpp:70:20: error: 'adc_time' was not declared in this scope; did you mean 'rtc_time'?
+   70 |         if(times - adc_time == 10) {
+      |                    ^~~~~~~~
+      |                    rtc_time
+make[2]: *** [esp-idf/user_app/CMakeFiles/__idf_user_app.dir/user_app.cpp.obj] Error 1
+make[1]: *** [esp-idf/user_app/CMakeFiles/__idf_user_app.dir/all] Error 2
+make: *** [all] Error 2

@@ -1,0 +1,9 @@
+Command: make -j 14 all
+/Users/hermes/esp/factory-program/components/ui_bsp/generated/setup_scr_screen.c: In function 'setup_scr_screen':
+/Users/hermes/esp/factory-program/components/ui_bsp/generated/setup_scr_screen.c:471:31: error: assignment to 'lv_obj_t *' {aka 'struct _lv_obj_t *'} from incompatible pointer type 'lv_chart_series_t *' [-Wincompatible-pointer-types]
+  471 |     ui->screen_chart_series_1 = lv_chart_add_series(ui->screen_chart_1, lv_color_hex(0x000000), LV_CHART_AXIS_PRIMARY_Y);
+      |                               ^
+make[2]: *** [esp-idf/ui_bsp/CMakeFiles/__idf_ui_bsp.dir/generated/setup_scr_screen.c.obj] Error 1
+make[2]: *** Waiting for unfinished jobs....
+make[1]: *** [esp-idf/ui_bsp/CMakeFiles/__idf_ui_bsp.dir/all] Error 2
+make: *** [all] Error 2
