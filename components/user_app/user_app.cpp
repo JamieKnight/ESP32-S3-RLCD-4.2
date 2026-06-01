@@ -270,6 +270,46 @@ void UserApp_UiInit() {
     setup_ui(&init_ui);
     lv_label_set_text(init_ui.screen_label_8, "ON");
     lv_label_set_text(init_ui.screen_label_15, "等待操作");
+
+    // Create manual Y-axis tick labels: 15, 20, 25, 30, 34 °C
+    // Chart area: y=160 to 295, scaled range 150-340
+    // Y_pixel = 160 + 135 * (340 - scaled_val) / 190
+    int scaled_vals[] = {150, 200, 250, 300, 340};
+    for (int i = 0; i < 5; i++) {
+        char num[16];
+        int celsius = scaled_vals[i] / 10;
+        snprintf(num, sizeof(num), "%d", celsius);
+        lv_coord_t py = 160 + (135 * (340 - scaled_vals[i])) / 190;
+
+        lv_obj_t *label = lv_label_create(init_ui.screen_cont_2);
+        lv_label_set_text(label, num);
+        lv_obj_set_pos(label, 8, py - 7);
+        lv_obj_set_size(label, 30, 14);
+        lv_obj_set_style_text_color(label, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
+        lv_obj_set_style_text_font(label, &lv_font_montserratMedium_16, LV_PART_MAIN | LV_STATE_DEFAULT);
+        lv_obj_set_style_text_align(label, LV_TEXT_ALIGN_RIGHT, LV_PART_MAIN | LV_STATE_DEFAULT);
+        lv_obj_set_style_bg_opa(label, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+    }
+
+    // Y-axis "°C" unit label
+    lv_obj_t *yunit = lv_label_create(init_ui.screen_cont_2);
+    lv_label_set_text(yunit, "°C");
+    lv_obj_set_pos(yunit, 8, 230);
+    lv_obj_set_size(yunit, 30, 14);
+    lv_obj_set_style_text_color(yunit, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(yunit, &lv_font_montserratMedium_16, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_align(yunit, LV_TEXT_ALIGN_RIGHT, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_opa(yunit, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+
+    // X-axis "5 min" label
+    lv_obj_t *xunit = lv_label_create(init_ui.screen_cont_2);
+    lv_label_set_text(xunit, "5 min");
+    lv_obj_set_pos(xunit, 70, 298);
+    lv_obj_set_size(xunit, 60, 14);
+    lv_obj_set_style_text_color(xunit, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(xunit, &lv_font_montserratMedium_16, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_align(xunit, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_opa(xunit, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
 }
 
 void UserApp_TaskInit() {

@@ -1,0 +1,54 @@
+Command: make -j 14 all
+/Users/hermes/esp/factory-program/components/user_app/user_app.cpp: In function 'void UserApp_UiInit()':
+/Users/hermes/esp/factory-program/components/user_app/user_app.cpp:290:81: warning: bitwise operation between different enumeration types '<unnamed enum>' and '<unnamed enum>' is deprecated [-Wdeprecated-enum-enum-conversion]
+  290 |         lv_obj_set_style_text_color(yl[i], lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
+      |                                                                    ~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~
+/Users/hermes/esp/factory-program/components/user_app/user_app.cpp:291:86: warning: bitwise operation between different enumeration types '<unnamed enum>' and '<unnamed enum>' is deprecated [-Wdeprecated-enum-enum-conversion]
+  291 |         lv_obj_set_style_text_font(yl[i], &lv_font_montserratMedium_16, LV_PART_MAIN | LV_STATE_DEFAULT);
+      |                                                                         ~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~
+/Users/hermes/esp/factory-program/components/user_app/user_app.cpp:292:78: warning: bitwise operation between different enumeration types '<unnamed enum>' and '<unnamed enum>' is deprecated [-Wdeprecated-enum-enum-conversion]
+  292 |         lv_obj_set_style_text_align(yl[i], LV_TEXT_ALIGN_RIGHT, LV_PART_MAIN | LV_STATE_DEFAULT);
+      |                                                                 ~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~
+/Users/hermes/esp/factory-program/components/user_app/user_app.cpp:293:56: warning: bitwise operation between different enumeration types '<unnamed enum>' and '<unnamed enum>' is deprecated [-Wdeprecated-enum-enum-conversion]
+  293 |         lv_obj_set_style_bg_opa(yl[i], 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+      |                                           ~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~
+/Users/hermes/esp/factory-program/components/user_app/user_app.cpp:301:77: warning: bitwise operation between different enumeration types '<unnamed enum>' and '<unnamed enum>' is deprecated [-Wdeprecated-enum-enum-conversion]
+  301 |     lv_obj_set_style_text_color(yunit, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
+      |                                                                ~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~
+/Users/hermes/esp/factory-program/components/user_app/user_app.cpp:302:82: warning: bitwise operation between different enumeration types '<unnamed enum>' and '<unnamed enum>' is deprecated [-Wdeprecated-enum-enum-conversion]
+  302 |     lv_obj_set_style_text_font(yunit, &lv_font_montserratMedium_16, LV_PART_MAIN | LV_STATE_DEFAULT);
+      |                                                                     ~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~
+/Users/hermes/esp/factory-program/components/user_app/user_app.cpp:303:74: warning: bitwise operation between different enumeration types '<unnamed enum>' and '<unnamed enum>' is deprecated [-Wdeprecated-enum-enum-conversion]
+  303 |     lv_obj_set_style_text_align(yunit, LV_TEXT_ALIGN_RIGHT, LV_PART_MAIN | LV_STATE_DEFAULT);
+      |                                                             ~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~
+/Users/hermes/esp/factory-program/components/user_app/user_app.cpp:304:52: warning: bitwise operation between different enumeration types '<unnamed enum>' and '<unnamed enum>' is deprecated [-Wdeprecated-enum-enum-conversion]
+  304 |     lv_obj_set_style_bg_opa(yunit, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+      |                                       ~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~
+/Users/hermes/esp/factory-program/components/user_app/user_app.cpp:311:77: warning: bitwise operation between different enumeration types '<unnamed enum>' and '<unnamed enum>' is deprecated [-Wdeprecated-enum-enum-conversion]
+  311 |     lv_obj_set_style_text_color(xunit, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
+      |                                                                ~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~
+/Users/hermes/esp/factory-program/components/user_app/user_app.cpp:312:82: warning: bitwise operation between different enumeration types '<unnamed enum>' and '<unnamed enum>' is deprecated [-Wdeprecated-enum-enum-conversion]
+  312 |     lv_obj_set_style_text_font(xunit, &lv_font_montserratMedium_16, LV_PART_MAIN | LV_STATE_DEFAULT);
+      |                                                                     ~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~
+/Users/hermes/esp/factory-program/components/user_app/user_app.cpp:313:75: warning: bitwise operation between different enumeration types '<unnamed enum>' and '<unnamed enum>' is deprecated [-Wdeprecated-enum-enum-conversion]
+  313 |     lv_obj_set_style_text_align(xunit, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
+      |                                                              ~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~
+/Users/hermes/esp/factory-program/components/user_app/user_app.cpp:314:52: warning: bitwise operation between different enumeration types '<unnamed enum>' and '<unnamed enum>' is deprecated [-Wdeprecated-enum-enum-conversion]
+  314 |     lv_obj_set_style_bg_opa(xunit, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+      |                                       ~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~
+/Users/hermes/esp/factory-program/components/user_app/user_app.cpp:278:10: warning: unused variable 'lbl' [-Wunused-variable]
+  278 |     char lbl[8];
+      |          ^~~
+/Users/hermes/esp/factory-program/components/user_app/user_app.cpp:283:27: error: '%d' directive output may be truncated writing between 1 and 10 bytes into a region of size 6 [-Werror=format-truncation=]
+  283 |         snprintf(num, 6, "%d", celsius);
+      |                           ^~
+/Users/hermes/esp/factory-program/components/user_app/user_app.cpp:283:26: note: directive argument in the range [-214748364, 214748364]
+  283 |         snprintf(num, 6, "%d", celsius);
+      |                          ^~~~
+/Users/hermes/esp/factory-program/components/user_app/user_app.cpp:283:17: note: 'snprintf' output between 2 and 11 bytes into a destination of size 6
+  283 |         snprintf(num, 6, "%d", celsius);
+      |         ~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~
+cc1plus: some warnings being treated as errors
+make[2]: *** [esp-idf/user_app/CMakeFiles/__idf_user_app.dir/user_app.cpp.obj] Error 1
+make[1]: *** [esp-idf/user_app/CMakeFiles/__idf_user_app.dir/all] Error 2
+make: *** [all] Error 2

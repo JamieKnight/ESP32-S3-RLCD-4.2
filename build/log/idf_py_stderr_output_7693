@@ -1,0 +1,38 @@
+Command: make -j 14 all
+/Users/hermes/esp/factory-program/components/user_app/user_app.cpp: In function 'void UserApp_UiInit()':
+/Users/hermes/esp/factory-program/components/user_app/user_app.cpp:288:81: warning: bitwise operation between different enumeration types '<unnamed enum>' and '<unnamed enum>' is deprecated [-Wdeprecated-enum-enum-conversion]
+  288 |         lv_obj_set_style_text_color(label, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
+      |                                                                    ~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~
+/Users/hermes/esp/factory-program/components/user_app/user_app.cpp:289:86: warning: bitwise operation between different enumeration types '<unnamed enum>' and '<unnamed enum>' is deprecated [-Wdeprecated-enum-enum-conversion]
+  289 |         lv_obj_set_style_text_font(label, &lv_font_montserratMedium_16, LV_PART_MAIN | LV_STATE_DEFAULT);
+      |                                                                         ~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~
+/Users/hermes/esp/factory-program/components/user_app/user_app.cpp:290:78: warning: bitwise operation between different enumeration types '<unnamed enum>' and '<unnamed enum>' is deprecated [-Wdeprecated-enum-enum-conversion]
+  290 |         lv_obj_set_style_text_align(label, LV_TEXT_ALIGN_RIGHT, LV_PART_MAIN | LV_STATE_DEFAULT);
+      |                                                                 ~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~
+/Users/hermes/esp/factory-program/components/user_app/user_app.cpp:291:56: warning: bitwise operation between different enumeration types '<unnamed enum>' and '<unnamed enum>' is deprecated [-Wdeprecated-enum-enum-conversion]
+  291 |         lv_obj_set_style_bg_opa(label, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+      |                                           ~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~
+/Users/hermes/esp/factory-program/components/user_app/user_app.cpp:299:77: warning: bitwise operation between different enumeration types '<unnamed enum>' and '<unnamed enum>' is deprecated [-Wdeprecated-enum-enum-conversion]
+  299 |     lv_obj_set_style_text_color(yunit, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
+      |                                                                ~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~
+/Users/hermes/esp/factory-program/components/user_app/user_app.cpp:300:82: warning: bitwise operation between different enumeration types '<unnamed enum>' and '<unnamed enum>' is deprecated [-Wdeprecated-enum-enum-conversion]
+  300 |     lv_obj_set_style_text_font(yunit, &lv_font_montserratMedium_16, LV_PART_MAIN | LV_STATE_DEFAULT);
+      |                                                                     ~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~
+/Users/hermes/esp/factory-program/components/user_app/user_app.cpp:301:74: warning: bitwise operation between different enumeration types '<unnamed enum>' and '<unnamed enum>' is deprecated [-Wdeprecated-enum-enum-conversion]
+  301 |     lv_obj_set_style_text_align(yunit, LV_TEXT_ALIGN_RIGHT, LV_PART_MAIN | LV_STATE_DEFAULT);
+      |                                                             ~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~
+/Users/hermes/esp/factory-program/components/user_app/user_app.cpp:302:52: warning: bitwise operation between different enumeration types '<unnamed enum>' and '<unnamed enum>' is deprecated [-Wdeprecated-enum-enum-conversion]
+  302 |     lv_obj_set_style_bg_opa(yunit, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+      |                                       ~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~
+/Users/hermes/esp/factory-program/components/user_app/user_app.cpp:309:77: warning: bitwise operation between different enumeration types '<unnamed enum>' and '<unnamed enum>' is deprecated [-Wdeprecated-enum-enum-conversion]
+  309 |     lv_obj_set_style_text_color(xunit, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
+      |                                                                ~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~
+/Users/hermes/esp/factory-program/components/user_app/user_app.cpp:310:82: warning: bitwise operation between different enumeration types '<unnamed enum>' and '<unnamed enum>' is deprecated [-Wdeprecated-enum-enum-conversion]
+  310 |     lv_obj_set_style_text_font(xunit, &lv_font_montserratMedium_16, LV_PART_MAIN | LV_STATE_DEFAULT);
+      |                                                                     ~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~
+/Users/hermes/esp/factory-program/components/user_app/user_app.cpp:311:75: warning: bitwise operation between different enumeration types '<unnamed enum>' and '<unnamed enum>' is deprecated [-Wdeprecated-enum-enum-conversion]
+  311 |     lv_obj_set_style_text_align(xunit, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
+      |                                                              ~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~
+/Users/hermes/esp/factory-program/components/user_app/user_app.cpp:312:52: warning: bitwise operation between different enumeration types '<unnamed enum>' and '<unnamed enum>' is deprecated [-Wdeprecated-enum-enum-conversion]
+  312 |     lv_obj_set_style_bg_opa(xunit, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+      |                                       ~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~
