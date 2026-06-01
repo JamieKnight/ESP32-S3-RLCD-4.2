@@ -1,0 +1,8 @@
+Command: make -j 14 all
+/Users/hermes/esp/factory-program/components/user_app/user_app.cpp:14:10: fatal error: lv_chart.h: No such file or directory
+   14 | #include "lv_chart.h"
+      |          ^~~~~~~~~~~~
+compilation terminated.
+make[2]: *** [esp-idf/user_app/CMakeFiles/__idf_user_app.dir/user_app.cpp.obj] Error 1
+make[1]: *** [esp-idf/user_app/CMakeFiles/__idf_user_app.dir/all] Error 2
+make: *** [all] Error 2

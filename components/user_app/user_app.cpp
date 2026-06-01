@@ -13,6 +13,10 @@
 #include "ble_scan_bsp.h"
 
 static lv_ui init_ui;
+static lv_coord_t temp_history[60];
+static uint8_t temp_idx = 0;
+static bool temp_initialized = false;
+
 I2cMasterBus I2cbus(14,13,0);
 CustomSDPort *sdcardPort = NULL;
 Shtc3Port *shtc3port = NULL;
@@ -32,6 +36,29 @@ void Lvgl_Cont1Task(void *arg) {
     lv_obj_add_flag(init_ui.screen_cont_1, LV_OBJ_FLAG_HIDDEN);
     lv_obj_add_flag(init_ui.screen_cont_3, LV_OBJ_FLAG_HIDDEN);
     vTaskDelete(NULL); 
+}
+
+void chart_update_temp_series(float temperature) {
+    // Scaled to 10x: 15°C -> 150, 34°C -> 340
+    lv_coord_t scaled = (lv_coord_t)(temperature * 10);
+    // Clamp to valid range for display
+    if (scaled < 150) scaled = 150;
+    if (scaled > 340) scaled = 340;
+
+    // Store in circular buffer
+    temp_history[temp_idx] = (lv_coord_t)scaled;
+    temp_idx = (temp_idx + 1) % 60;
+
+    // Initialize chart on first data point
+    if (!temp_initialized) {
+        for (int i = 0; i < 60; i++) {
+            temp_history[i] = (lv_coord_t)scaled;
+        }
+        lv_chart_set_ext_y_array(init_ui.screen_chart_1, init_ui.screen_chart_series_1, temp_history);
+        temp_initialized = true;
+    } else {
+        lv_chart_refresh(init_ui.screen_chart_1);
+    }
 }
 
 void Lvgl_UserTask(void *arg) {
@@ -65,6 +92,8 @@ void Lvgl_UserTask(void *arg) {
             lv_label_set_text(init_ui.screen_label_11, lvgl_buffer);
             snprintf(lvgl_buffer,30,"%d°",(int)temp);
             lv_label_set_text(init_ui.screen_label_12, lvgl_buffer);
+            // Update temperature chart
+            chart_update_temp_series(temp);
         }
         vTaskDelay(pdMS_TO_TICKS(200));
         times++;
