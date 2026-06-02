@@ -477,9 +477,9 @@ void setup_scr_screen(lv_ui *ui)
     ui->screen_chart_series_1 = lv_chart_add_series(ui->screen_chart_1, lv_color_hex(0x000000), LV_CHART_AXIS_PRIMARY_Y);
 
     // Y-axis: 20 minor tick marks = 1°C increments (labels via manual widgets), 3px tick lines
-    lv_chart_set_axis_tick(ui->screen_chart_1, LV_CHART_AXIS_PRIMARY_Y, 3, 0, 20, 0, false, 0);
-    // X-axis: 10 minor tick marks (labels via manual widgets), 0px tick lines
-    lv_chart_set_axis_tick(ui->screen_chart_1, LV_CHART_AXIS_PRIMARY_X, 0, 0, 10, 0, false, 0);
+    lv_chart_set_axis_tick(ui->screen_chart_1, LV_CHART_AXIS_PRIMARY_Y, 3, 0, 20, 0, true, 25);
+    // X-axis: 60 points, 10 major ticks (every 6 points ≈ 30s), with labels, 15px reserved
+    lv_chart_set_axis_tick(ui->screen_chart_1, LV_CHART_AXIS_PRIMARY_X, 0, 0, 10, 0, true, 15);
 
     //Write codes screen_label_18
     ui->screen_label_18 = lv_label_create(ui->screen_cont_2);
