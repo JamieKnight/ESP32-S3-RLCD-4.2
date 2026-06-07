@@ -94,10 +94,15 @@ void setup_scr_screen(lv_ui *ui)
     //Write codes screen_chart_series
     ui->screen_chart_series = lv_chart_add_series(ui->screen_chart, lv_color_black(), LV_CHART_AXIS_PRIMARY_Y);
 
-    // Y-axis: labels every 5°C (150-340), auto-generated from range
-    lv_chart_set_axis_tick(ui->screen_chart, LV_CHART_AXIS_PRIMARY_Y, 3, 0, 10, 0, true, 25);
-    // X-axis: 6 labels at 5-min intervals, auto-generated from range
-    lv_chart_set_axis_tick(ui->screen_chart, LV_CHART_AXIS_PRIMARY_X, 3, 0, 6, 0, true, 15);
+    // Set font for chart tick labels (MISANS medium 18 is appropriate for RTL 400x300)
+    lv_obj_set_style_text_font(ui->screen_chart, &lv_font_MISANSMEDIUM_18, LV_PART_TICKS|LV_STATE_DEFAULT);
+    // Also set label bg transparent to avoid inverse-contrast issues on RTL
+    lv_obj_set_style_bg_opa(ui->screen_chart, 0, LV_PART_TICKS|LV_STATE_DEFAULT);
+
+    // Y-axis: 10 ticks (150-340 = 15-34 °C), draw_size large enough for 3-digit labels
+    lv_chart_set_axis_tick(ui->screen_chart, LV_CHART_AXIS_PRIMARY_Y, 3, 0, 10, 0, true, 40);
+    // X-axis: 6 ticks (0-5 min)
+    lv_chart_set_axis_tick(ui->screen_chart, LV_CHART_AXIS_PRIMARY_X, 3, 0, 6, 0, true, 20);
 
     //Write codes screen_info_tab
     ui->screen_info_tab = lv_tabview_add_tab(ui->screen_tabview, "Info");
@@ -110,7 +115,7 @@ void setup_scr_screen(lv_ui *ui)
 
     //Write codes screen_label_temp (left half - temperature)
     ui->screen_label_temp = lv_label_create(ui->screen_info_tab);
-    lv_label_set_text(ui->screen_label_temp, "--°C");
+    lv_label_set_text(ui->screen_label_temp, "--C");  /* MISANS font lacks Unicode degree symbol, use 'C' */
     lv_label_set_long_mode(ui->screen_label_temp, LV_LABEL_LONG_WRAP);
     lv_obj_set_width(ui->screen_label_temp, lv_pct(50));
     lv_obj_set_height(ui->screen_label_temp, lv_pct(100));

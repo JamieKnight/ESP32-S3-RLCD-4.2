@@ -86,8 +86,8 @@ __attribute__((unused)) void ta_event_cb (lv_event_t *e) {
 /* ======== Update Info tab: temp and time labels ======== */
 void update_info_tab(float temperature, rtcTimeStruct_t *timeData) {
     char buf[16];
-    /* Temperature with 1 decimal place: "23.4°" */
-    snprintf(buf, sizeof(buf), "%.1f°", temperature);
+    /* Temperature with 1 decimal place: "23.4C" (MISANS font lacks degree symbol) */
+    snprintf(buf, sizeof(buf), "%.1fC", temperature);
     lv_label_set_text(init_ui.screen_label_temp, buf);
 
     /* Time in HH:MM:SS */
