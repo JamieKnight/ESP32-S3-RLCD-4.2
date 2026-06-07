@@ -16,9 +16,20 @@ extern "C" {
 #include "lvgl.h"
 #include "gui_guider.h"
 
+/* Simple RTC time struct for C compilation (C++ includes i2c_equipment.h) */
+#ifndef __cplusplus
+typedef struct {
+    int hour;
+    int minute;
+    int second;
+} rtcTimeStruct_t;
+#endif
+
 __attribute__((unused)) void kb_event_cb(lv_event_t *e);
 __attribute__((unused)) void ta_event_cb(lv_event_t *e);
 __attribute__((unused)) void chart_update_temp_series(float temperature);
+void update_info_tab(float temperature, rtcTimeStruct_t *timeData);
+void switch_to_tab(uint8_t tab_id);
 #if LV_USE_ANALOGCLOCK != 0
 void clock_count(int *hour, int *min, int *sec);
 #endif

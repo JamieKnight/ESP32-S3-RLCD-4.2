@@ -17,6 +17,7 @@ idf_component_register(
     REQUIRES
     esp_driver_sdmmc
     fatfs
+    esp_driver_i2c
     INCLUDE_DIRS 
     "./" 
     "./src/multi_button"

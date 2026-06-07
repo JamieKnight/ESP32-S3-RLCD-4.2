@@ -11,11 +11,13 @@
 #include "adc_bsp.h"
 #include "esp_wifi_bsp.h"
 #include "ble_scan_bsp.h"
+#include "widgets_init.h"
 
-static lv_ui init_ui;
-static lv_coord_t temp_history[60];
-static uint8_t temp_idx = 0;
-static bool temp_initialized = false;
+/* Global UI object (defined in gui_guider.h as extern) */
+lv_ui init_ui;
+lv_coord_t temp_history[60];
+uint8_t temp_idx = 0;
+bool temp_initialized = false;
 
 I2cMasterBus I2cbus(14,13,0);
 CustomSDPort *sdcardPort = NULL;
@@ -25,144 +27,40 @@ CodecPort *codecport = NULL;
 static uint8_t *audio_ptr = NULL;
 static bool is_Music = true;
 
-void Lvgl_Cont1Task(void *arg) {
-    lv_obj_clear_flag(init_ui.screen_label_1,LV_OBJ_FLAG_HIDDEN); 
-    lv_obj_add_flag(init_ui.screen_label_2, LV_OBJ_FLAG_HIDDEN);
-    vTaskDelay(pdMS_TO_TICKS(1500));
-    lv_obj_clear_flag(init_ui.screen_label_2,LV_OBJ_FLAG_HIDDEN); 
-    lv_obj_add_flag(init_ui.screen_label_1, LV_OBJ_FLAG_HIDDEN);
-    vTaskDelay(pdMS_TO_TICKS(1500));
-    lv_obj_clear_flag(init_ui.screen_cont_2,LV_OBJ_FLAG_HIDDEN); 
-    lv_obj_add_flag(init_ui.screen_cont_1, LV_OBJ_FLAG_HIDDEN);
-    lv_obj_add_flag(init_ui.screen_cont_3, LV_OBJ_FLAG_HIDDEN);
-    vTaskDelete(NULL); 
-}
-
-void chart_update_temp_series(float temperature) {
-    // Scaled to 10x: 15°C -> 150, 34°C -> 340
-    lv_coord_t scaled = (lv_coord_t)(temperature * 10);
-    // Clamp to valid range for display
-    if (scaled < 150) scaled = 150;
-    if (scaled > 340) scaled = 340;
-
-    // Store in circular buffer
-    temp_history[temp_idx] = (lv_coord_t)scaled;
-    temp_idx = (temp_idx + 1) % 60;
-
-    // Initialize chart on first data point
-    if (!temp_initialized) {
-        for (int i = 0; i < 60; i++) {
-            temp_history[i] = (lv_coord_t)scaled;
-        }
-        lv_chart_set_ext_y_array(init_ui.screen_chart_1, init_ui.screen_chart_series_1, temp_history);
-        temp_initialized = true;
-    } else {
-        lv_chart_refresh(init_ui.screen_chart_1);
-    }
-}
+void chart_update_temp_series(float temperature);
 
 void Lvgl_UserTask(void *arg) {
     uint32_t times = 0;
-    uint32_t adc_time = 0;
-    uint32_t rtc_time = 0;
     uint32_t shtc3_time = 0;
-    char lvgl_buffer[30] = {""};
+    float rh = 0, temp = 0;
+    rtcTimeStruct_t timerData;
+
     for(;;) {
-        if(times - adc_time == 10) {
-            adc_time = times;
-            uint8_t level = Adc_GetBatteryLevel();
-            snprintf(lvgl_buffer,30,"%d%%",level);
-            lv_label_set_text(init_ui.screen_label_7, lvgl_buffer);
-        }
-        if(times - rtc_time == 5) {
-            rtc_time = times;
-            rtcTimeStruct_t timerData;
-            Rtc_GetTime(&timerData);
-            snprintf(lvgl_buffer,30,"%02d",timerData.minute);
-            lv_label_set_text(init_ui.screen_label_3, lvgl_buffer);
-            snprintf(lvgl_buffer,30,"%02d",timerData.second);
-            lv_label_set_text(init_ui.screen_label_4, lvgl_buffer);
-        }
-        if(times - shtc3_time == 25)
-        {
-            shtc3_time = times;
-            float rh,temp;
-            shtc3port->Shtc3_ReadTempHumi(&temp,&rh);
-            snprintf(lvgl_buffer,30,"%d%%",(int)rh);
-            lv_label_set_text(init_ui.screen_label_11, lvgl_buffer);
-            snprintf(lvgl_buffer,30,"%d°",(int)temp);
-            lv_label_set_text(init_ui.screen_label_12, lvgl_buffer);
-            // Update temperature chart
-            chart_update_temp_series(temp);
-        }
         vTaskDelay(pdMS_TO_TICKS(200));
         times++;
-    }
-}
 
-void Lvgl_SDcardTask(void *arg) {
-    const char *str_write = "waveshare.com";
-    char str_read[20] = {""};
-    if(0 == sdcardPort->SDPort_GetStatus()) {
-        lv_label_set_text(init_ui.screen_label_6, "No Card");
-    } else {
-        sdcardPort->SDPort_WriteFile("/sdcard/sdcard.txt",str_write,strlen(str_write));
-        sdcardPort->SDPort_ReadFile("/sdcard/sdcard.txt",(uint8_t *)str_read,NULL);
-        if(!strcmp(str_write,str_read)) {
-            lv_label_set_text(init_ui.screen_label_6, "passed");
-        } else {
-            lv_label_set_text(init_ui.screen_label_6, "failed");
+        /* Read SHTC3 every 25 ticks (5 seconds) */
+        if(times - shtc3_time == 25) {
+            shtc3_time = times;
+            shtc3port->Shtc3_ReadTempHumi(&temp,&rh);
+
+            /* Update chart with scaled temperature */
+            chart_update_temp_series(temp);
+
+            /* Update Info tab labels if Info tab is active */
+            uint8_t current_tab = lv_tabview_get_tab_act(init_ui.screen_tabview);
+            if (current_tab == 1) {
+                Rtc_GetTime(&timerData);
+                update_info_tab(temp, &timerData);
+            }
         }
     }
-    vTaskDelete(NULL);
-}
-
-void Lvgl_WfifBleScanTask(void *srg) {
-    char send_lvgl[10] = {""};
-    uint8_t ble_scan_count = 0;
-    uint8_t ble_mac[6];
-    EventBits_t even = xEventGroupWaitBits(wifi_even_,0x02,pdTRUE,pdTRUE,pdMS_TO_TICKS(30000)); 
-    espwifi_deinit(); //释放WIFI
-    ble_scan_prepare();
-    ble_stack_init();
-    ble_scan_start();
-    for(;xQueueReceive(ble_queue,ble_mac,3500) == pdTRUE;) {
-        ble_scan_count++;
-        if(ble_scan_count >= 20)
-        break;
-        vTaskDelay(pdMS_TO_TICKS(30));
-    }
-    if(get_bit_data(even,1)) {
-        snprintf(send_lvgl,9,"%d",user_esp_bsp.apNum);
-        lv_label_set_text(init_ui.screen_label_14, send_lvgl);
-    } else {
-        lv_label_set_text(init_ui.screen_label_14, "P");
-    }
-    snprintf(send_lvgl,10,"%d",ble_scan_count);
-    lv_label_set_text(init_ui.screen_label_13, send_lvgl);
-    ble_stack_deinit();    //释放BLE
-    vTaskDelete(NULL);
 }
 
 void BOOT_LoopTask(void *arg) {
-    bool is_cont4en = 0;
     for(;;) {
         EventBits_t even = xEventGroupWaitBits(BootButtonGroups,(0x01 | 0x02 | 0x04),pdTRUE,pdFALSE,pdMS_TO_TICKS(2000));
-        if(even & 0x04) {
-            if(0 == is_cont4en) {
-                is_cont4en = 1;
-                lv_obj_clear_flag(init_ui.screen_cont_4,LV_OBJ_FLAG_HIDDEN); 
-                lv_obj_add_flag(init_ui.screen_cont_1, LV_OBJ_FLAG_HIDDEN);
-                lv_obj_add_flag(init_ui.screen_cont_2, LV_OBJ_FLAG_HIDDEN);
-                lv_obj_add_flag(init_ui.screen_cont_3, LV_OBJ_FLAG_HIDDEN);
-            } else {
-                is_cont4en = 0;
-                lv_obj_clear_flag(init_ui.screen_cont_2,LV_OBJ_FLAG_HIDDEN); 
-                lv_obj_add_flag(init_ui.screen_cont_1, LV_OBJ_FLAG_HIDDEN);
-                lv_obj_add_flag(init_ui.screen_cont_4, LV_OBJ_FLAG_HIDDEN);
-                lv_obj_add_flag(init_ui.screen_cont_3, LV_OBJ_FLAG_HIDDEN);
-            }
-        } else if(even & 0x01) {
+        if(even & 0x01) {
             xEventGroupSetBits(CodecGroups,0x02);
         } else if(even & 0x02) {
             xEventGroupSetBits(CodecGroups,0x01);
@@ -171,28 +69,13 @@ void BOOT_LoopTask(void *arg) {
 }
 
 void KEY_LoopTask(void *arg) {
-    bool is_cont3en = 0;
     for(;;) {
         EventBits_t even = xEventGroupWaitBits(GP18ButtonGroups,(0x01 | 0x02 | 0x04),pdTRUE,pdFALSE,pdMS_TO_TICKS(2000));
         if(even & 0x01) {
-            is_Music = false;
-        } else if(even & 0x02) {
-            is_Music = true;
-            xEventGroupSetBits(CodecGroups,0x04);
-        } else if(even & 0x04) {
-            if(0 == is_cont3en) {
-                is_cont3en = 1;
-                lv_obj_clear_flag(init_ui.screen_cont_3,LV_OBJ_FLAG_HIDDEN); 
-                lv_obj_add_flag(init_ui.screen_cont_1, LV_OBJ_FLAG_HIDDEN);
-                lv_obj_add_flag(init_ui.screen_cont_2, LV_OBJ_FLAG_HIDDEN);
-                lv_obj_add_flag(init_ui.screen_cont_4, LV_OBJ_FLAG_HIDDEN);
-            } else {
-                is_cont3en = 0;
-                lv_obj_clear_flag(init_ui.screen_cont_2,LV_OBJ_FLAG_HIDDEN); 
-                lv_obj_add_flag(init_ui.screen_cont_1, LV_OBJ_FLAG_HIDDEN);
-                lv_obj_add_flag(init_ui.screen_cont_3, LV_OBJ_FLAG_HIDDEN);
-                lv_obj_add_flag(init_ui.screen_cont_4, LV_OBJ_FLAG_HIDDEN);
-            }
+            /* Single click: switch tabs */
+            uint8_t current = lv_tabview_get_tab_act(init_ui.screen_tabview);
+            uint8_t next = (current == 0) ? 1 : 0;
+            lv_tabview_set_act(init_ui.screen_tabview, next, LV_ANIM_ON);
         }
     }
 }
@@ -201,51 +84,29 @@ void Codec_LoopTask(void *arg) {
     bool is_eco = 0;
     for(;;) {
         EventBits_t even = xEventGroupWaitBits(CodecGroups,(0x01 | 0x02 | 0x04),pdTRUE,pdFALSE,pdMS_TO_TICKS(8 * 1000));
-		if(even & 0x01)
-		{
-			lv_label_set_text(init_ui.screen_label_15, "正在录音");
-			lv_label_set_text(init_ui.screen_label_17, "Recording...");
-			codecport->CodecPort_EchoRead(audio_ptr,192 * 1000);
-			lv_label_set_text(init_ui.screen_label_15, "录音完成");
-			lv_label_set_text(init_ui.screen_label_17, "Rec Done");
+        if(even & 0x01) {
+            codecport->CodecPort_EchoRead(audio_ptr,192 * 1000);
             is_eco = 1;
-		}
-		else if(even & 0x02)
-		{
+        }
+        else if(even & 0x02) {
             if(1 == is_eco) {
                 is_eco = 0;
-                lv_label_set_text(init_ui.screen_label_15, "正在播放");
-			    lv_label_set_text(init_ui.screen_label_17, "Playing...");
-			    codecport->CodecPort_PlayWrite(audio_ptr,192 * 1000);
-			    lv_label_set_text(init_ui.screen_label_15, "播放完成");
-			    lv_label_set_text(init_ui.screen_label_17, "Play Done");
+                codecport->CodecPort_PlayWrite(audio_ptr,192 * 1000);
             }
-		}
-		else if(even & 0x04)
-		{
-			lv_label_set_text(init_ui.screen_label_15, "正在播放音乐");
-			lv_label_set_text(init_ui.screen_label_17, "Play Music");
-			codecport->CodecPort_SetSpeakerVol(90);
-			uint32_t bytes_sizt;
-			size_t bytes_write = 0;
-			uint8_t *data_ptr = codecport->CodecPort_GetPcmData(&bytes_sizt);
-			while (bytes_write < bytes_sizt)
-            {
+        }
+        else if(even & 0x04) {
+            codecport->CodecPort_SetSpeakerVol(90);
+            uint32_t bytes_sizt;
+            size_t bytes_write = 0;
+            uint8_t *data_ptr = codecport->CodecPort_GetPcmData(&bytes_sizt);
+            while (bytes_write < bytes_sizt) {
                 codecport->CodecPort_PlayWrite(data_ptr, 256);
                 data_ptr += 256;
                 bytes_write += 256;
-				if(!is_Music)
-				break;
+                if(!is_Music) break;
             }
-			codecport->CodecPort_SetSpeakerVol(100);
-			lv_label_set_text(init_ui.screen_label_15, "播放完成");
-			lv_label_set_text(init_ui.screen_label_17, "Play Done");
-		}
-		else
-		{
-			lv_label_set_text(init_ui.screen_label_15, "等待操作");
-			lv_label_set_text(init_ui.screen_label_17, "Idle");
-		}
+            codecport->CodecPort_SetSpeakerVol(100);
+        }
     }
 }
 
@@ -268,56 +129,11 @@ void UserApp_AppInit() {
 
 void UserApp_UiInit() {
     setup_ui(&init_ui);
-    lv_label_set_text(init_ui.screen_label_8, "ON");
-    lv_label_set_text(init_ui.screen_label_15, "等待操作");
-
-    // Create manual Y-axis tick labels: 15, 20, 25, 30, 34 °C
-    // Chart area: y=160 to 295, scaled range 150-340
-    // Y_pixel = 160 + 135 * (340 - scaled_val) / 190
-    int scaled_vals[] = {150, 200, 250, 300, 340};
-    for (int i = 0; i < 5; i++) {
-        char num[16];
-        int celsius = scaled_vals[i] / 10;
-        snprintf(num, sizeof(num), "%d", celsius);
-        lv_coord_t py = 160 + (135 * (340 - scaled_vals[i])) / 190;
-
-        lv_obj_t *label = lv_label_create(init_ui.screen_cont_2);
-        lv_label_set_text(label, num);
-        lv_obj_set_pos(label, 8, py - 7);
-        lv_obj_set_size(label, 30, 14);
-        lv_obj_set_style_text_color(label, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
-        lv_obj_set_style_text_font(label, &lv_font_montserratMedium_16, LV_PART_MAIN | LV_STATE_DEFAULT);
-        lv_obj_set_style_text_align(label, LV_TEXT_ALIGN_RIGHT, LV_PART_MAIN | LV_STATE_DEFAULT);
-        lv_obj_set_style_bg_opa(label, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
-    }
-
-    // Y-axis "°C" unit label
-    lv_obj_t *yunit = lv_label_create(init_ui.screen_cont_2);
-    lv_label_set_text(yunit, "°C");
-    lv_obj_set_pos(yunit, 8, 230);
-    lv_obj_set_size(yunit, 30, 14);
-    lv_obj_set_style_text_color(yunit, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_text_font(yunit, &lv_font_montserratMedium_16, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_text_align(yunit, LV_TEXT_ALIGN_RIGHT, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_bg_opa(yunit, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
-
-    // X-axis "5 min" label
-    lv_obj_t *xunit = lv_label_create(init_ui.screen_cont_2);
-    lv_label_set_text(xunit, "5 min");
-    lv_obj_set_pos(xunit, 70, 298);
-    lv_obj_set_size(xunit, 60, 14);
-    lv_obj_set_style_text_color(xunit, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_text_font(xunit, &lv_font_montserratMedium_16, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_text_align(xunit, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_bg_opa(xunit, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
 }
 
 void UserApp_TaskInit() {
-    xTaskCreatePinnedToCore(Lvgl_Cont1Task, "Lvgl_Cont1Task", 4 * 1024, NULL, 2, NULL,1);
-    xTaskCreatePinnedToCore(Lvgl_UserTask, "Lvgl_UserTask", 5 * 1024, NULL, 2, NULL,1);
-    xTaskCreatePinnedToCore(Lvgl_SDcardTask, "Lvgl_SDcardTask", 4 * 1024, NULL, 2, NULL,1);
-    xTaskCreatePinnedToCore(Lvgl_WfifBleScanTask, "Lvgl_WfifBleScanTask", 4 * 1024, NULL, 2, NULL,1);
-    xTaskCreatePinnedToCore(BOOT_LoopTask, "BOOT_LoopTask", 4 * 1024, NULL, 2, NULL,1);
-    xTaskCreatePinnedToCore(KEY_LoopTask, "KEY_LoopTask", 4 * 1024, NULL, 2, NULL,1);
-    xTaskCreatePinnedToCore(Codec_LoopTask, "Codec_LoopTask", 4 * 1024, NULL, 4, NULL,1);
+    xTaskCreatePinnedToCore(Lvgl_UserTask, "Lvgl_UserTask", 5 * 1024, NULL, 2, NULL, 1);
+    xTaskCreatePinnedToCore(BOOT_LoopTask, "BOOT_LoopTask", 4 * 1024, NULL, 2, NULL, 1);
+    xTaskCreatePinnedToCore(KEY_LoopTask, "KEY_LoopTask", 4 * 1024, NULL, 2, NULL, 1);
+    xTaskCreatePinnedToCore(Codec_LoopTask, "Codec_LoopTask", 4 * 1024, NULL, 2, NULL, 1);
 }

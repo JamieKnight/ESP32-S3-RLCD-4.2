@@ -1,7 +1,7 @@
 /*
 * Copyright 2025 NXP
 * NXP Proprietary. This software is owned or controlled by NXP and may only be used strictly in
-* accordance with the applicable license terms. By expressly accepting such terms or by downloading, installing,
+* accordance with the applicable license terms. By expressly accepting such terms. By expressly accepting such terms or by downloading, installing,
 * activating and/or otherwise using the software, you are agreeing that you have read, and that you agree to
 * comply with and are bound by, such license terms.  If you do not agree to be bound by the applicable license
 * terms, then you may not retain, install, activate or otherwise use the software.
@@ -15,49 +15,37 @@ extern "C" {
 
 #include "lvgl.h"
 
+/* Chart: rolling 5-minute (60-point) history buffer */
+extern lv_coord_t temp_history[60];
+extern uint8_t temp_idx;
+extern bool temp_initialized;
+
 typedef struct
 {
   
 	lv_obj_t *screen;
 	bool screen_del;
+	/* Background container */
 	lv_obj_t *screen_cont_1;
-	lv_obj_t *screen_label_1;
-	lv_obj_t *screen_label_2;
-	lv_obj_t *screen_cont_2;
-	lv_obj_t *screen_label_3;
-	lv_obj_t *screen_label_4;
-	lv_obj_t *screen_img_1;
-	lv_obj_t *screen_label_6;
-	lv_obj_t *screen_label_5;
-	lv_obj_t *screen_img_2;
-	lv_obj_t *screen_label_7;
-	lv_obj_t *screen_label_8;
-	lv_obj_t *screen_img_3;
-	lv_obj_t *screen_img_4;
-	lv_obj_t *screen_label_9;
-	lv_obj_t *screen_label_10;
-	lv_obj_t *screen_label_11;
-	lv_obj_t *screen_label_12;
-	lv_obj_t *screen_label_13;
-	lv_obj_t *screen_label_14;
-	lv_obj_t *screen_cont_3;
-	lv_obj_t *screen_img_5;
-	lv_obj_t *screen_cont_4;
-	lv_obj_t *screen_img_6;
-	lv_obj_t *screen_chart_1;
-	lv_chart_series_t *screen_chart_series_1;
-	lv_obj_t *screen_label_18;
-	lv_obj_t *screen_label_19;
-	lv_obj_t *screen_label_17;
-	lv_obj_t *screen_label_16;
-	lv_obj_t *screen_label_15;
+	/* Tab view with Chart and Info tabs */
+	lv_obj_t *screen_tabview;
+	/* Chart widget in Chart tab */
+	lv_obj_t *screen_chart;
+	lv_chart_series_t *screen_chart_series;
+	/* Info tab labels (temperature left, time right) */
+	lv_obj_t *screen_label_temp;
+	lv_obj_t *screen_label_time;
+	/* Chart tab container (hidden when on Info tab) */
+	lv_obj_t *screen_chart_tab;
+	/* Info tab container (hidden when on Chart tab) */
+	lv_obj_t *screen_info_tab;
 }lv_ui;
 
 typedef void (*ui_setup_scr_t)(lv_ui * ui);
 
 void ui_init_style(lv_style_t * style);
 
-void ui_load_scr_animation(lv_ui *ui, lv_obj_t ** new_scr, bool new_scr_del, bool * old_scr_del, ui_setup_scr_t setup_scr,
+void ui_load_scr_animation(lv_ui *ui, lv_obj_t** new_scr, bool new_scr_del, bool * old_scr_del, ui_setup_scr_t setup_scr,
                            lv_scr_load_anim_t anim_type, uint32_t time, uint32_t delay, bool is_clean, bool auto_del);
 
 void ui_animation(void * var, int32_t duration, int32_t delay, int32_t start_value, int32_t end_value, lv_anim_path_cb_t path_cb,
@@ -71,7 +59,7 @@ void setup_ui(lv_ui *ui);
 
 void init_keyboard(lv_ui *ui);
 
-extern lv_ui guider_ui;
+extern lv_ui init_ui;
 
 
 void setup_scr_screen(lv_ui *ui);

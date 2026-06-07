@@ -12,7 +12,37 @@
 #include "widgets_init.h"
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
+#include <freertos/FreeRTOS.h>
 
+/* ======== Chart update ======== */
+void chart_update_temp_series(float temperature) {
+    /* Scale to 10x: 15°C → 150, 34°C → 340 */
+    lv_coord_t scaled = (lv_coord_t)(temperature * 10);
+    if (scaled < 150) scaled = 150;
+    if (scaled > 340) scaled = 340;
+
+    temp_history[temp_idx] = scaled;
+    temp_idx = (temp_idx + 1) % 60;
+
+    if (!temp_initialized) {
+        /* Fill entire buffer with first reading so chart isn't flatline */
+        for (int i = 0; i < 60; i++) {
+            temp_history[i] = scaled;
+        }
+        lv_chart_set_ext_y_array(init_ui.screen_chart, init_ui.screen_chart_series, temp_history);
+        temp_initialized = true;
+    } else {
+        /* Update only the latest point */
+        lv_chart_set_ext_y_array(init_ui.screen_chart, init_ui.screen_chart_series, temp_history);
+    }
+    lv_chart_refresh(init_ui.screen_chart);
+}
+
+/* ======== Tab switching via single-press on USER button (GPIO 18) ======== */
+void switch_to_tab(uint8_t tab_id) {
+    lv_tabview_set_act(init_ui.screen_tabview, tab_id, LV_ANIM_ON);
+}
 
 __attribute__((unused)) void kb_event_cb (lv_event_t *e) {
     lv_event_code_t code = lv_event_get_code(e);
@@ -51,6 +81,18 @@ __attribute__((unused)) void ta_event_cb (lv_event_t *e) {
         lv_obj_move_background(kb);
         lv_obj_add_flag(kb, LV_OBJ_FLAG_HIDDEN);
     }
+}
+
+/* ======== Update Info tab: temp and time labels ======== */
+void update_info_tab(float temperature, rtcTimeStruct_t *timeData) {
+    char buf[16];
+    /* Temperature with 1 decimal place: "23.4°" */
+    snprintf(buf, sizeof(buf), "%.1f°", temperature);
+    lv_label_set_text(init_ui.screen_label_temp, buf);
+
+    /* Time in HH:MM:SS */
+    snprintf(buf, sizeof(buf), "%02d:%02d:%02d", timeData->hour, timeData->minute, timeData->second);
+    lv_label_set_text(init_ui.screen_label_time, buf);
 }
 
 #if LV_USE_ANALOGCLOCK != 0
