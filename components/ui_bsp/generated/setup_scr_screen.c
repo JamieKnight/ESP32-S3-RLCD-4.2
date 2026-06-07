@@ -71,16 +71,19 @@ void setup_scr_screen(lv_ui *ui)
 
     //Add "Chart" tab
     ui->screen_chart_tab = lv_tabview_add_tab(ui->screen_tabview, "Chart");
-    //Write style for Chart tab content (left/bottom padding for axis labels)
-    lv_obj_set_style_pad_top(ui->screen_chart_tab, 8, LV_PART_MAIN|LV_STATE_DEFAULT);
-    lv_obj_set_style_pad_bottom(ui->screen_chart_tab, 22, LV_PART_MAIN|LV_STATE_DEFAULT);
-    lv_obj_set_style_pad_left(ui->screen_chart_tab, 42, LV_PART_MAIN|LV_STATE_DEFAULT);
+    // No padding on tab content — chart positioned explicitly to leave room for axis labels
+    lv_obj_set_style_pad_top(ui->screen_chart_tab, 0, LV_PART_MAIN|LV_STATE_DEFAULT);
+    lv_obj_set_style_pad_bottom(ui->screen_chart_tab, 0, LV_PART_MAIN|LV_STATE_DEFAULT);
+    lv_obj_set_style_pad_left(ui->screen_chart_tab, 0, LV_PART_MAIN|LV_STATE_DEFAULT);
     lv_obj_set_style_pad_right(ui->screen_chart_tab, 0, LV_PART_MAIN|LV_STATE_DEFAULT);
     lv_obj_set_style_bg_opa(ui->screen_chart_tab, 0, LV_PART_MAIN|LV_STATE_DEFAULT);
 
     //Write codes screen_chart
     ui->screen_chart = lv_chart_create(ui->screen_chart_tab);
-    lv_obj_set_size(ui->screen_chart, lv_pct(100), lv_pct(100));
+    // Chart: 320x192 with ext_draw 40px left (Y labels) + 20px bottom (X labels) = 360x212 total render area
+    lv_obj_set_size(ui->screen_chart, 320, 192);
+    // Position: 42px right offset reserves 40px for Y-axis labels on left
+    lv_obj_set_pos(ui->screen_chart, 42, 10);
     lv_obj_set_style_bg_color(ui->screen_chart, lv_color_hex(0xffffff), LV_PART_MAIN|LV_STATE_DEFAULT);
     lv_obj_set_style_bg_opa(ui->screen_chart, 255, LV_PART_MAIN|LV_STATE_DEFAULT);
     lv_obj_set_style_border_width(ui->screen_chart, 1, LV_PART_MAIN|LV_STATE_DEFAULT);
@@ -94,19 +97,20 @@ void setup_scr_screen(lv_ui *ui)
     //Write codes screen_chart_series
     ui->screen_chart_series = lv_chart_add_series(ui->screen_chart, lv_color_black(), LV_CHART_AXIS_PRIMARY_Y);
 
-    // Set font for chart tick labels (MISANS medium 18 is appropriate for RTL 400x300)
+    // Chart tick labels: font, explicit black text, transparent bg
     lv_obj_set_style_text_font(ui->screen_chart, &lv_font_MISANSMEDIUM_18, LV_PART_TICKS|LV_STATE_DEFAULT);
-    // Explicit black text on white chart background
     lv_obj_set_style_text_color(ui->screen_chart, lv_color_hex(0x000000), LV_PART_TICKS|LV_STATE_DEFAULT);
-    // Also set label bg transparent to avoid inverse-contrast issues on RTL
     lv_obj_set_style_bg_opa(ui->screen_chart, 0, LV_PART_TICKS|LV_STATE_DEFAULT);
-    // Tick lines also black
     lv_obj_set_style_line_color(ui->screen_chart, lv_color_hex(0x000000), LV_PART_TICKS|LV_STATE_DEFAULT);
 
-    // Y-axis: 10 ticks (150-340 = 15-34 °C), draw_size large enough for 3-digit labels
-    lv_chart_set_axis_tick(ui->screen_chart, LV_CHART_AXIS_PRIMARY_Y, 3, 0, 10, 0, true, 40);
-    // X-axis: 6 ticks (0-5 min)
-    lv_chart_set_axis_tick(ui->screen_chart, LV_CHART_AXIS_PRIMARY_X, 3, 0, 6, 0, true, 20);
+    // Y-axis: 10 major ticks (150-340 = 15-34 °C), 40px ext_draw for labels, minor_cnt=1 (no subdivisions)
+    lv_chart_set_axis_tick(ui->screen_chart, LV_CHART_AXIS_PRIMARY_Y, 3, 0, 10, 1, true, 40);
+    // X-axis: 6 major ticks, 20px ext_draw for labels, minor_cnt=1
+    lv_chart_set_axis_tick(ui->screen_chart, LV_CHART_AXIS_PRIMARY_X, 3, 0, 6, 1, true, 20);
+    // Enable div lines so grid is visible
+    lv_chart_set_div_line_count(ui->screen_chart, 5, 5);
+    lv_obj_set_style_line_color(ui->screen_chart, lv_color_hex(0xcccccc), LV_PART_ITEMS|LV_STATE_DEFAULT);
+    lv_obj_set_style_line_width(ui->screen_chart, 1, LV_PART_ITEMS|LV_STATE_DEFAULT);
 
     //Write codes screen_info_tab
     ui->screen_info_tab = lv_tabview_add_tab(ui->screen_tabview, "Info");
